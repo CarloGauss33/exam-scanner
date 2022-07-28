@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "exif-js": "^2.3.0",
     "jspdf": "^2.5.1",
     "vue": "^3.2.37"
   },
