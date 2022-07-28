@@ -5,38 +5,41 @@
   const images = ref<string[]>([]);
   const numberOfAttachments = ref(1);
   const isGenerating = ref(false);
-
   function submit() {
     isGenerating.value = true;
-    generatePDF();
+
+    generatePDF().then(() => {
+      isGenerating.value = false;
+    });
+
   }
 
-  function generatePDF() {
-    isGenerating.value = true;
+  async function generatePDF() {
     const doc = new jsPDF('p', 'mm','a4', true);
     var canvas = document.createElement("canvas") as HTMLCanvasElement;
     const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-    var img = new Image();
 
     images.value.forEach((image, index) => {
       const alias = `image${index}`;
-      img.src = image;
-      img.onload = () => {
+      new Promise( resolve => {
+        var img = new Image();
+        img.src = image;
+        resolve(img as HTMLImageElement);
+      }).then( img => {
         doc.setFontSize(7);
         doc.text("Page " + (index + 1), 200, 2);
         canvas.width = img.width;
         canvas.height = img.height;
         context?.drawImage(img, 0, 0);
         doc.addImage(canvas.toDataURL('image/png'), 'PNG', 3.5, 3.5, 203, 290, alias, "SLOW");
-        if (index < images.value.length - 1) {
+
+        if (index === images.value.length - 1) {
+          doc.save('test.pdf');
+        } else {
           doc.addPage();
         }
-      };
+      });
     });
-    setTimeout(() => {
-      doc.save('test.pdf');
-    }, 2000);
-    isGenerating.value = false;
   }
 
   function onFileChange(event: Event, index: number) {
@@ -54,7 +57,7 @@
 
 <template>
   <div class="flex flex-col space-y-4 md:p-24 p-4 bg-white min-h-screen w-screen">
-    <form @submit.prevent="submit" class="bg-slate-300 md:p-8 p-3 rounded-md w-full">
+    <form class="bg-slate-300 md:p-8 p-3 rounded-md w-full">
       <div v-for="i in numberOfAttachments" :key="i" class="mb-6">
         <input type="file" :id="`file-field-${i}`" @change="onFileChange($event, i-1)" accept="image/jpg" capture="environment" class="mb-0.5">
       </div>
@@ -62,10 +65,10 @@
         <button type="button" @click="numberOfAttachments = numberOfAttachments + 1" class="p-1 bg-gray-400 hover:bg-gray-500 rounded-md">
           Add file
         </button>
-        <button type="submit" class="p-1 bg-gray-400 hover:bg-gray-500 rounded-lg">Generate PDF</button>
+        <button type="button" @click="submit" class="p-1 bg-gray-400 hover:bg-gray-500 rounded-lg">Generate PDF</button>
       </div>
       <div v-if="isGenerating">
-        <p class="text-center">Generating PDF...</p>
+        <p>Generating PDF...</p>
       </div>
     </form>
   </div>
