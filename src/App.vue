@@ -57,7 +57,7 @@
       file,
       {
         quality: 0.3,
-        type: "image/jpeg"
+        type: 'image/jpeg' as imageConversion.EImageType
       }).then(res=>{
       var reader = new FileReader();
       reader.readAsDataURL(res);
