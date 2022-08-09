@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "exif-js": "^2.3.0",
+    "image-conversion": "^2.1.1",
     "jspdf": "^2.5.1",
     "vue": "^3.2.37"
   },
