@@ -51,7 +51,7 @@
   async function onFileChange(event: Event, index: number) {
     inputRendering.value[index] = true;
 
-    const file =  (event.target as HTMLInputElement).files[0];
+    const file =  (event.target as HTMLInputElement).files![0];
 
     imageConversion.compress(
       file,

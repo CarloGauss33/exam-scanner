@@ -34,7 +34,7 @@
   function onFileChange(event: Event, index: number) {
     isLoadingImages.value = true;
     event.preventDefault();
-    const file = (event.target as HTMLInputElement).files[0];
+    const file = (event.target as HTMLInputElement).files![0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
