@@ -7,6 +7,7 @@
   const inputRendering = ref<boolean[]>([false]);
   const numberOfAttachments = ref(1);
   const isGenerating = ref(false);
+  const filename = ref("");
 
   function showRandomMessage() {
     const options = ['Procesando la imagen..',
@@ -20,6 +21,11 @@
   const isAnyInputRendering = computed(() => {
     return inputRendering.value.some(x => x);
   });
+
+  const computedFilename = computed(() => {
+    return filename.value.length > 0 ? filename.value + ".pdf" : "archivo.pdf";
+  }
+  );
 
 
   function submit() {
@@ -41,7 +47,7 @@
       doc.addImage(image, 'JPEG', 3.5, 3.5, 203, 290, alias, "SLOW");
 
       if (index === images.value.length - 1) {
-        doc.save('test.pdf');
+        doc.save(computedFilename.value);
       } else {
         doc.addPage();
       }
@@ -70,8 +76,12 @@
 </script>
 
 <template>
-  <div class="flex flex-col space-y-4 md:p-24 p-4 bg-white min-h-screen w-screen">
-    <div class="bg-slate-300 md:p-8 p-3 rounded-md w-full">
+  <div class="flex flex-col space-y-4 md:p-24 p-4 bg-green-900 min-h-screen w-screen">
+    <div class="bg-gray-200 md:p-8 p-3 rounded-md w-full">
+      <div class="flex flex-col space-y-2 rounded-md mb-4 justify-center">
+        <p> Ingresa el nombre del archivo que deseas generar:</p>
+        <input type="text" v-model="filename" class="p-2 rounded-lg" placeholder="NombreArchivo">
+      </div>
       <div v-for="i in numberOfAttachments" :key="i" class="mb-6">
         <input type="file" :id="`file-field-${i}`" @change="onFileChange($event, i-1)" accept="image/jpg" capture="environment" class="mb-0.5">
       </div>
