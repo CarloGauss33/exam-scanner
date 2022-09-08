@@ -76,7 +76,7 @@
 </script>
 
 <template>
-  <div class="flex flex-col space-y-4 md:p-24 p-4 bg-green-900 min-h-screen w-screen">
+  <div class="flex flex-col space-y-4 md:p-24 p-4 bg-white min-h-screen w-screen">
     <div class="bg-gray-200 md:p-8 p-3 rounded-md w-full">
       <div class="flex flex-col space-y-2 rounded-md mb-4 justify-center">
         <p> Ingresa el nombre del archivo que deseas generar:</p>
