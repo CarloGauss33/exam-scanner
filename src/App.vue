@@ -79,7 +79,7 @@
   <div class="flex flex-col space-y-4 md:p-24 p-4 bg-white min-h-screen w-screen">
     <div class="bg-gray-200 md:p-8 p-3 rounded-md w-full">
       <div class="flex flex-col space-y-2 rounded-md mb-4 justify-center">
-        <p> Ingresa el nombre del archivo que deseas generar:</p>
+        <p> Ingresa el nombre de archivo en el formato (RUT_PX) donde X es el numero de pregunta:</p>
         <input type="text" v-model="filename" class="p-2 rounded-lg" placeholder="NombreArchivo">
       </div>
       <div v-for="i in numberOfAttachments" :key="i" class="mb-6">
