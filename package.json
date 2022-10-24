@@ -12,7 +12,10 @@
     "exif-js": "^2.3.0",
     "image-conversion": "^2.1.1",
     "jspdf": "^2.5.1",
-    "vue": "^3.2.37"
+    "pinia": "^2.0.22",
+    "pocketbase": "^0.7.0",
+    "vue": "^3.2.37",
+    "vue-router": "4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^3.0.0",
