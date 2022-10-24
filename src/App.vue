@@ -76,21 +76,43 @@
 </script>
 
 <template>
-  <div class="flex flex-col space-y-4 md:p-24 p-4 bg-white min-h-screen w-screen">
-    <div class="bg-gray-200 md:p-8 p-3 rounded-md w-full">
-      <div class="flex flex-col space-y-2 rounded-md mb-4 justify-center">
-        <p> Ingresa el nombre de archivo en el formato (RUT_PX) donde X es el numero de pregunta:</p>
-        <input type="text" v-model="filename" class="p-2 rounded-lg" placeholder="NombreArchivo">
+  <div class="flex flex-col space-y-4 md:p-24 p-4 bg-gradient-to-br from-blue-600 to-red-600 min-h-screen w-screen">
+    <div class="bg-gray-100 md:p-8 p-3 rounded-md w-full">
+      <div class="flex flex-col rounded-md mb-6 justify-center">
+        <h2 class="text-xl font-semibold mb-3"> Selecciona la pregunta que corresponda </h2>
+        <div>
+          <input type="radio" id="Pregunta-1" v-model="filename" value="Pregunta-1" class="mx-1">
+          <label for="Pregunta-1" class="mx-2">Pregunta 1</label>
+        </div>
+        <div>
+          <input type="radio" id="Pregunta-2" v-model="filename" value="Pregunta-2" class="mx-1">
+          <label for="Pregunta-2" class="mx-2">Pregunta 2</label>
+        </div>
+        <div>
+          <input type="radio" id="Pregunta-3" v-model="filename" value="Pregunta-3" class="mx-1">
+          <label for="Pregunta-3" class="mx-2">Pregunta 3</label>
+        </div>
+        <div>
+          <input type="radio" id="Pregunta-4" v-model="filename" value="Pregunta-4" class="mx-1">
+          <label for="Pregunta-4" class="mx-2">Pregunta 4</label>
+        </div>
       </div>
       <div v-for="i in numberOfAttachments" :key="i" class="mb-6">
-        <input type="file" :id="`file-field-${i}`" @change="onFileChange($event, i-1)" accept="image/jpg" capture="environment" class="mb-0.5">
+        <input
+          type="file"
+          :id="`file-field-${i}`"
+          @change="onFileChange($event, i-1)"
+          accept="image/jpg"
+          capture="environment"
+          class="mb-0.5 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        />
       </div>
       <div class="flex flex-row items-center space-x-5">
-        <button type="button" @click="numberOfAttachments = numberOfAttachments + 1" class="p-1 bg-gray-400 hover:bg-gray-500 rounded-md">
-          Add file
+        <button type="button" @click="numberOfAttachments = numberOfAttachments + 1" class="p-2 text-white bg-blue-600 hover:bg-blue-800 rounded-lg">
+          Añadir más archivos
         </button>
-        <button type="button" @click="submit" class="p-1 bg-gray-400 hover:bg-gray-500 rounded-lg" :class="{'opacity-50': isAnyInputRendering}" :disabled="isAnyInputRendering">
-          Generate
+        <button type="button" @click="submit" class="p-2 text-white bg-blue-600 hover:bg-blue-800 rounded-lg" :class="{'opacity-50': isAnyInputRendering}" :disabled="isAnyInputRendering">
+          Generar PDF
         </button>
       </div>
       <div v-if="isAnyInputRendering" class="mt-5 text-center text-black font-bold">
