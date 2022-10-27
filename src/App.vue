@@ -29,6 +29,17 @@
   }
   );
 
+  function removeImage(index: number) {
+    // remove image from array and reorganize if the file ammount is 1 then only remove the image but not the space on the array
+    if (images.value.length > 1) {
+      images.value.splice(index, 1);
+      inputRendering.value.splice(index, 1);
+      numberOfAttachments.value--;
+    } else {
+      images.value = [];
+      inputRendering.value = [];
+    }
+  }
 
   function submit() {
     isGenerating.value = true;
@@ -73,12 +84,14 @@
         images.value[index] = reader.result as string;
         inputRendering.value[index] = false;
       }
-    })
+    }).finally(() => {
+      inputRendering.value[index] = false;
+    });
   }
 </script>
 
 <template>
-  <div class="flex flex-col space-y-4 md:p-24 p-4 bg-gradient-to-br from-blue-600 to-red-600 min-h-screen w-screen">
+  <div class="flex flex-col space-y-4 md:p-24 p-4 bg-gradient-to-br from-blue-600 to-red-600 min-h-screen">
     <div class="bg-gray-100 md:p-8 p-3 rounded-md w-full">
       <div class="flex flex-col rounded-md mb-6 justify-center">
         <h2 class="text-xl font-semibold mb-3"> Selecciona un nombre para el archivo </h2>
@@ -107,16 +120,36 @@
           <input type="text" v-model="filename" class="border-2 border-blue-400 p-2 mt-3 rounded-md w-full" placeholder="Nombre del archivo">
         </div>
       </div>
+    <div class="flex flex-col items-center md:grid md:grid-cols-4 gap-x-4">
       <div v-for="i in numberOfAttachments" :key="i" class="mb-6">
+        <label
+          :for="`file-field-${i}`"
+          class="block text-gray-700 text-sm font-bold mb-2"
+        >
+          <div v-if="images[i-1]">
+            <div class="w-64 h-96 bg-cover bg-center rounded-md p-0.5" :style="{ backgroundImage: `url(${images[i-1]})` }">
+              <div class="flex justify-center items-center w-8 h-8 bg-red-500 rounded-2xl">
+                <button @click="removeImage(i-1)" class="text-white text-xl font-bold">X</button>
+              </div>
+            </div>
+          </div>
+          <div v-else>
+            <div class="flex flex-col items-center justify-center w-64 h-96 bg-gray-200 rounded-md">
+              <i class="fas fa-file-upload text-4xl text-gray-400"></i>
+              <span class="text-gray-600 text-2xl p-2"> Añadir imagen </span>
+            </div>
+          </div>
+        </label>
         <input
           type="file"
           :id="`file-field-${i}`"
           @change="onFileChange($event, i-1)"
           accept="image/jpg"
           capture="environment"
-          class="mb-0.5 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          class="hidden"
         />
       </div>
+    </div>
       <div class="flex flex-row items-center space-x-5">
         <button type="button" @click="numberOfAttachments = numberOfAttachments + 1" class="p-2 text-white bg-blue-600 hover:bg-blue-800 rounded-lg">
           Añadir más archivos
