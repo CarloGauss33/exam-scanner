@@ -7,8 +7,10 @@
   const inputRendering = ref<boolean[]>([false]);
   const numberOfAttachments = ref(1);
   const isGenerating = ref(false);
-  const filename = ref("");
-
+  const filename = ref<string>('Pregunta-1');
+  const customFilenameSelected = computed(() =>
+    new RegExp('Pregunta-[0-9]+').test(filename.value) ? false : true
+  );
   function showRandomMessage() {
     const options = ['Procesando la imagen..',
                      'Comprimiendo...',
@@ -79,9 +81,9 @@
   <div class="flex flex-col space-y-4 md:p-24 p-4 bg-gradient-to-br from-blue-600 to-red-600 min-h-screen w-screen">
     <div class="bg-gray-100 md:p-8 p-3 rounded-md w-full">
       <div class="flex flex-col rounded-md mb-6 justify-center">
-        <h2 class="text-xl font-semibold mb-3"> Selecciona la pregunta que corresponda </h2>
+        <h2 class="text-xl font-semibold mb-3"> Selecciona un nombre para el archivo </h2>
         <div>
-          <input type="radio" id="Pregunta-1" v-model="filename" value="Pregunta-1" class="mx-1">
+          <input type="radio" id="Pregunta-1" v-model="filename" value="Pregunta-1" class="mx-1" checked>
           <label for="Pregunta-1" class="mx-2">Pregunta 1</label>
         </div>
         <div>
@@ -95,6 +97,14 @@
         <div>
           <input type="radio" id="Pregunta-4" v-model="filename" value="Pregunta-4" class="mx-1">
           <label for="Pregunta-4" class="mx-2">Pregunta 4</label>
+        </div>
+        <div>
+          <input type="radio" id="custom-filename" v-model="filename" value="" class="mx-1">
+          <label for="custom-filename" class="mx-2">Otro</label>
+        </div>
+
+        <div v-if="customFilenameSelected">
+          <input type="text" v-model="filename" class="border-2 border-blue-400 p-2 mt-3 rounded-md w-full" placeholder="Nombre del archivo">
         </div>
       </div>
       <div v-for="i in numberOfAttachments" :key="i" class="mb-6">
