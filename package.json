@@ -12,7 +12,8 @@
     "exif-js": "^2.3.0",
     "image-conversion": "^2.1.1",
     "jspdf": "^2.5.1",
-    "vue": "^3.2.37"
+    "vue": "^3.2.37",
+    "vue-advanced-cropper": "^1.11.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^3.0.0",
