@@ -1,36 +1,29 @@
-<script setup lang="ts">
-  import { jsPDF } from "jspdf";
-  import { ref, computed } from "vue";
+<script setup lang='ts'>
+  import { jsPDF } from 'jspdf';
+  import { ref, computed } from 'vue';
   import * as imageConversion from 'image-conversion';
 
   const images = ref<string[]>([]);
   const inputRendering = ref<boolean[]>([false]);
   const numberOfAttachments = ref(1);
   const isGenerating = ref(false);
-  const filename = ref<string>('Pregunta-1');
-  const customFilenameSelected = computed(() =>
-    new RegExp('Pregunta-[0-9]+').test(filename.value) ? false : true
-  );
-  function showRandomMessage() {
-    const options = ['Procesando la imagen..',
-                     'Comprimiendo...',
-                     'Haciendo cosas...',
-                     'Aplicando filtros...',
-                     'Llamando a Dios...'];
-    return options[Math.floor(Math.random() * options.length)];
-  }
+
+  const filename = ref("");
 
   const isAnyInputRendering = computed(() => {
     return inputRendering.value.some(x => x);
   });
 
+  const isSummitDisabled = computed(() => {
+    return isAnyInputRendering.value || isGenerating.value;
+  });
+
   const computedFilename = computed(() => {
-    return filename.value.length > 0 ? filename.value + ".pdf" : "archivo.pdf";
+    return filename.value.length > 0 ? filename.value + ".pdf" : "scan.pdf";
   }
   );
 
   function removeImage(index: number) {
-    // remove image from array and reorganize if the file ammount is 1 then only remove the image but not the space on the array
     if (images.value.length > 1) {
       images.value.splice(index, 1);
       inputRendering.value.splice(index, 1);
@@ -47,7 +40,6 @@
     generatePDF().then(() => {
       isGenerating.value = false;
     });
-
   }
 
   async function generatePDF() {
@@ -91,52 +83,54 @@
 </script>
 
 <template>
-  <div class="flex flex-col space-y-4 md:p-24 p-4 bg-gradient-to-br from-blue-600 to-red-600 min-h-screen">
-    <div class="bg-gray-100 md:p-8 p-3 rounded-md w-full">
-      <div class="flex flex-col rounded-md mb-6 justify-center">
-        <h2 class="text-xl font-semibold mb-3"> Selecciona un nombre para el archivo </h2>
-        <div>
-          <input type="radio" id="Pregunta-1" v-model="filename" value="Pregunta-1" class="mx-1" checked>
-          <label for="Pregunta-1" class="mx-2">Pregunta 1</label>
-        </div>
-        <div>
-          <input type="radio" id="Pregunta-2" v-model="filename" value="Pregunta-2" class="mx-1">
-          <label for="Pregunta-2" class="mx-2">Pregunta 2</label>
-        </div>
-        <div>
-          <input type="radio" id="Pregunta-3" v-model="filename" value="Pregunta-3" class="mx-1">
-          <label for="Pregunta-3" class="mx-2">Pregunta 3</label>
-        </div>
-        <div>
-          <input type="radio" id="Pregunta-4" v-model="filename" value="Pregunta-4" class="mx-1">
-          <label for="Pregunta-4" class="mx-2">Pregunta 4</label>
-        </div>
-        <div>
-          <input type="radio" id="custom-filename" v-model="filename" value="" class="mx-1">
-          <label for="custom-filename" class="mx-2">Otro</label>
-        </div>
-
-        <div v-if="customFilenameSelected">
-          <input type="text" v-model="filename" class="border-2 border-blue-400 p-2 mt-3 rounded-md w-full" placeholder="Nombre del archivo">
+<input type="checkbox" id="help-modal" class="modal-toggle" />
+<div class="modal">
+  <div class="modal-box relative">
+    <label for="help-modal" class="btn btn-sm absolute right-2 top-2">✕</label>
+    <h3 class="text-lg font-bold">Como usar</h3>
+    <p class="py-4">Puedes usar scan.cparedesr.com en simples 4 pasos</p>
+    <ul class="steps">
+      <li class="step step-primary">Apretar en añadir imagen</li>
+      <li class="step step-primary">Saca una foto o selecciona una imagen</li>
+      <li class="step step-primary">Añade más archivos y repetir</li>
+      <li class="step step-primary">Asigna un nombre al archivo</li>
+      <li class="step step-primary">Genera tu PDF!</li>
+    </ul>
+  </div>
+</div>
+  <label for="help-modal" class="btn btn-sm absolute right-4 top-4">
+        ¿Cómo usar?
+  </label>
+  <div class="flex flex-col space-y-4 px-4 py-4 md:px-32 min-h-screen bg-gradient-to-r from-primary to-secondary">
+    <div class="card bg-base-100 shadow-xl md:p-8 p-3 my-auto w-full">
+      <div class="flex flex-col rounded-md mb-6 justify-center items-center md:items-start">
+        <h2 class="text-xl md:text-2xl font-semibold mb-4"> Selecciona un nombre para el archivo </h2>
+        <div class="form-control w-full">
+          <label class="input-group w-full">
+            <input type="text"  v-model="filename" placeholder="SCAN" class="input input-bordered input-primary  w-full" />
+            <span>.pdf</span>
+          </label>
         </div>
       </div>
-    <div class="flex flex-col items-center md:grid md:grid-cols-4 gap-x-4">
+    <div class="flex flex-col items-center md:grid md:grid-cols-5 gap-x-2">
       <div v-for="i in numberOfAttachments" :key="i" class="mb-6">
         <label
           :for="`file-field-${i}`"
-          class="block text-gray-700 text-sm font-bold mb-2"
+          class="block text-base-900 text-sm font-bold"
         >
           <div v-if="images[i-1]">
-            <div class="w-64 h-96 bg-cover bg-center rounded-md p-0.5" :style="{ backgroundImage: `url(${images[i-1]})` }">
-              <div class="flex justify-center items-center w-8 h-8 bg-red-500 rounded-2xl">
-                <button @click="removeImage(i-1)" class="text-white text-xl font-bold">X</button>
-              </div>
+            <div class="w-64 h-96 bg-cover bg-center rounded-md shadow-lg p-0.5" :style="{ backgroundImage: `url(${images[i-1]})` }">
+              <button @click="removeImage(i-1)" class="btn btn-error text-white text-xl font-bold">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                  <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clip-rule="evenodd" />
+                </svg>
+              </button>
             </div>
           </div>
           <div v-else>
-            <div class="flex flex-col items-center justify-center w-64 h-96 bg-gray-200 rounded-md">
-              <i class="fas fa-file-upload text-4xl text-gray-400"></i>
-              <span class="text-gray-600 text-2xl p-2"> Añadir imagen </span>
+            <div class="shadow-lg flex flex-col items-center justify-center w-64 h-96 bg-base-300 rounded-md">
+              <i class="fas fa-file-upload text-4xl text-base-900"></i>
+              <span class="text-base-600 text-2xl p-2"> Añadir imagen </span>
             </div>
           </div>
         </label>
@@ -150,19 +144,17 @@
         />
       </div>
     </div>
-      <div class="flex flex-row items-center space-x-5">
-        <button type="button" @click="numberOfAttachments = numberOfAttachments + 1" class="p-2 text-white bg-blue-600 hover:bg-blue-800 rounded-lg">
-          Añadir más archivos
-        </button>
-        <button type="button" @click="submit" class="p-2 text-white bg-blue-600 hover:bg-blue-800 rounded-lg" :class="{'opacity-50': isAnyInputRendering}" :disabled="isAnyInputRendering">
-          Generar PDF
-        </button>
-      </div>
-      <div v-if="isAnyInputRendering" class="mt-5 text-center text-black font-bold">
-        <p>{{ showRandomMessage() }}</p>
-      </div>
-      <div v-if="isGenerating" class="mt-5 text-center text-black font-bold">
-        <p>{{ showRandomMessage() }}</p>
+      <div class="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-x-5 md:space-y-0">
+        <div class="w-full">
+          <button type="button" @click="numberOfAttachments = numberOfAttachments + 1" class="btn btn-secondary btn-block">
+            Añadir más archivos
+          </button>
+        </div>
+        <div class="w-full">
+          <button type="button" @click="submit" class="btn btn-primary btn-block" :class="{ 'loading': isSummitDisabled }" :disabled="isSummitDisabled">
+            Generar PDF
+          </button>
+        </div>
       </div>
     </div>
   </div>
