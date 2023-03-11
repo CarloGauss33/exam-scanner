@@ -119,9 +119,9 @@
     <label for="help-modal" class="btn btn-sm absolute right-2 top-2">✕</label>
     <h3 class="text-lg font-bold">Como usar</h3>
     <p class="py-4">Puedes usar scan.cparedesr.com en simples 4 pasos</p>
-    <ul class="steps">
+    <ul class="steps steps-vertical">
       <li class="step step-primary">Apretar en añadir imagen</li>
-      <li class="step step-primary">Saca una foto o selecciona una imagen</li>
+      <li class="step step-primary">Saca una foto o agrega una imagen</li>
       <li class="step step-primary">Añade más archivos y repetir</li>
       <li class="step step-primary">Asigna un nombre al archivo</li>
       <li class="step step-primary">Genera tu PDF!</li>
