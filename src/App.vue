@@ -7,8 +7,9 @@
   const inputRendering = ref<boolean[]>([false]);
   const numberOfAttachments = ref(1);
   const isGenerating = ref(false);
+  const fieldDraggedOver = ref(-1);
 
-  const filename = ref("");
+  const filename = ref('');
 
   const isAnyInputRendering = computed(() => {
     return inputRendering.value.some(x => x);
@@ -19,7 +20,7 @@
   });
 
   const computedFilename = computed(() => {
-    return filename.value.length > 0 ? filename.value + ".pdf" : "scan.pdf";
+    return filename.value.length > 0 ? filename.value + '.pdf' : 'scan.pdf';
   }
   );
 
@@ -48,8 +49,8 @@
     images.value.forEach((image, index) => {
       const alias = `image${index}`;
       doc.setFontSize(7);
-      doc.text("Page " + (index + 1), 200, 2);
-      doc.addImage(image, 'JPEG', 3.5, 3.5, 203, 290, alias, "SLOW");
+      doc.text('Page ' + (index + 1), 200, 2);
+      doc.addImage(image, 'JPEG', 3.5, 3.5, 203, 290, alias, 'SLOW');
 
       if (index === images.value.length - 1) {
         doc.save(computedFilename.value);
@@ -60,6 +61,10 @@
   }
 
   async function onFileChange(event: Event, index: number) {
+    if (event.target === null) {
+      return;
+    }
+
     inputRendering.value[index] = true;
 
     const file =  (event.target as HTMLInputElement).files![0];
@@ -79,6 +84,31 @@
     }).finally(() => {
       inputRendering.value[index] = false;
     });
+  }
+
+  function dragover(index: number, event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    fieldDraggedOver.value = index;
+  }
+
+  function dragleave(index: number, event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    fieldDraggedOver.value = -1;
+  }
+
+  function drop(index: number, event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const file = event.dataTransfer!.files[0];
+    const input = document.getElementById(`file-field-${index}`) as HTMLInputElement;
+
+    input.files = event.dataTransfer!.files;
+    input.dispatchEvent(new Event('change'));
+
+    fieldDraggedOver.value = -1;
   }
 </script>
 
@@ -113,7 +143,14 @@
         </div>
       </div>
     <div class="flex flex-col items-center md:grid md:grid-cols-5 gap-x-2">
-      <div v-for="i in numberOfAttachments" :key="i" class="mb-6">
+      <div
+        v-for="i in numberOfAttachments"
+        :key="i"
+        class="mb-6"
+        @dragover="dragover(i, $event)"
+        @dragleave="dragleave(i, $event)"
+        @drop="drop(i, $event)"
+        >
         <label
           :for="`file-field-${i}`"
           class="block text-base-900 text-sm font-bold"
@@ -130,7 +167,9 @@
           <div v-else>
             <div class="shadow-lg flex flex-col items-center justify-center w-64 h-96 bg-base-300 rounded-md">
               <i class="fas fa-file-upload text-4xl text-base-900"></i>
-              <span class="text-base-600 text-2xl p-2"> Añadir imagen </span>
+              <span class="text-base-600 text-2xl p-2 text-center">
+                {{ fieldDraggedOver === i ? 'Suelta la imagen aquí' : 'Añadir imagen' }}
+              </span>
             </div>
           </div>
         </label>
